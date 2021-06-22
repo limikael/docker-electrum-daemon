@@ -33,7 +33,7 @@ electrum $FLAGS setconfig --offline use_gossip $GOSSIP
 # XXX: Check load wallet or create
 
 # Run application
-electrum $FLAGS --wallet $WALLET daemon &
+electrum "$ELECTRUM_ARGS" $FLAGS --wallet $WALLET daemon &
 ELECTRUM_PID=$!
 
 TRIES_LEFT=10
