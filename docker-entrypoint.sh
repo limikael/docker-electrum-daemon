@@ -1,11 +1,6 @@
 #!/usr/bin/env sh
 set -ex
 
-if [ -z "$WALLET"]; then
-	echo "No wallet specified"
-	exit 1
-fi
-
 # Network switch
 if [ "$TESTNET" = true ] || [ "$ELECTRUM_NETWORK" = "testnet" ]; then
   FLAGS='--testnet'
@@ -24,39 +19,46 @@ electrum $FLAGS setconfig --offline rpcpassword ${ELECTRUM_PASSWORD}
 electrum $FLAGS setconfig --offline rpchost 0.0.0.0
 electrum $FLAGS setconfig --offline rpcport 7000
 
-if [ -z "$GOSSIP"]; then
-  GOSSIP=false
+if [ -z "$USE_GOSSIP" ]; then
+  USE_GOSSIP=false
 fi
 
-electrum $FLAGS setconfig --offline use_gossip $GOSSIP
-
-# XXX: Check load wallet or create
-
+electrum $FLAGS setconfig --offline use_gossip $USE_GOSSIP
+  
 # Run application
-electrum "$ELECTRUM_ARGS" $FLAGS --wallet $WALLET daemon &
+WALLET_ARG=""
+if [ ! -z "$WALLET" ]; then
+  WALLET_ARG="--wallet $WALLET"
+fi
+
+electrum $ELECTRUM_ARGS $FLAGS $WALLET_ARG daemon &
 ELECTRUM_PID=$!
 
-TRIES_LEFT=10
-IS_UP=0
+# XXX: Check load wallet or create
+if [ ! -z "$WALLET" ]; then
+  TRIES_LEFT=30
+  IS_UP=0
 
-while [ ! $TRIES_LEFT -eq 0 -a $IS_UP -eq 0 ]; do
-  sleep 1
-  echo "Checking if electrum is up yet..."
-  electrum $FLAGS getinfo >> /dev/null && IS_UP=1 || true
-  TRIES_LEFT=`expr $TRIES_LEFT - 1`
-done
+  while [ ! $TRIES_LEFT -eq 0 -a $IS_UP -eq 0 ]; do
+    sleep 1
+    echo "Checking if electrum is up yet..."
+    electrum $FLAGS getinfo >> /dev/null && IS_UP=1 || true
+    TRIES_LEFT=`expr $TRIES_LEFT - 1`
+  done
+ 
+  if [ ! $IS_UP -eq 1 ]; then
+    echo "Electrum did not start"
+    exit 1
+  fi
 
-if [ ! $IS_UP -eq 1 ]; then
-  echo "Electrum did not start"
-  exit 1
+  if [ ! -f $WALLET ]; then
+    echo "Wallet file does not exist, creating"
+    electrum $FLAGS create
+  fi
+
+  echo "Loading wallet"
+  electrum $FLAGS load_wallet
 fi
-
-if [ ! -f $WALLET ]; then
-  echo "Wallet file does not exist, creating"
-  electrum $FLAGS create
-fi
-
-electrum $FLAGS load_wallet
 
 echo "Waiting for electrum to finish"
 wait $ELECTRUM_PID

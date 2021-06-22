@@ -38,16 +38,9 @@ RUN adduser -D $ELECTRUM_USER && \
     rm -f Electrum-${ELECTRUM_VERSION}.tar.gz && \
     apk del build-dependencies
 
-#RUN mkdir -p /data \
-#	  ${ELECTRUM_HOME}/.electrum/wallets/ \
-#	  ${ELECTRUM_HOME}/.electrum/testnet/wallets/ \
-#	  ${ELECTRUM_HOME}/.electrum/regtest/wallets/ \
-#	  ${ELECTRUM_HOME}/.electrum/simnet/wallets/ && \
-#	ln -sf ${ELECTRUM_HOME}/.electrum/ /data && \
-#	chown -R ${ELECTRUM_USER} ${ELECTRUM_HOME}/.electrum /data
-
-RUN mkdir /data
-RUN chown ${ELECTRUM_USER} /data
+RUN mkdir -p /data && \
+	ln -sf /data ${ELECTRUM_HOME}/.electrum  && \
+	chown -R ${ELECTRUM_USER} ${ELECTRUM_HOME}/.electrum /data
 
 USER $ELECTRUM_USER
 WORKDIR $ELECTRUM_HOME

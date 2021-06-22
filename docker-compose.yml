@@ -4,8 +4,13 @@ services:
   electrum:
     build: .
     ports:
-      - 127.0.0.1:7000:7000
+      - 7000:7000
+    volumes:
+      - electrum_data:/data
     environment:
       ELECTRUM_USER: electrum
       ELECTRUM_PASSWORD: changeme
-      TESTNET: False
+      WALLET: /data/wallets/mywallet
+
+volumes:
+  electrum_data: {}
