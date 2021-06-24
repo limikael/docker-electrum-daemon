@@ -24,7 +24,8 @@ if [ -z "$USE_GOSSIP" ]; then
 fi
 
 electrum $FLAGS setconfig --offline use_gossip $USE_GOSSIP
-  
+electrum $FLAGS setconfig --offline lightning_listen "$LIGHTNING_LISTEN"
+
 # Run application
 WALLET_ARG=""
 if [ ! -z "$WALLET" ]; then
