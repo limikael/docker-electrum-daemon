@@ -14,15 +14,18 @@ fi
 trap 'pkill -TERM -P1; electrum daemon stop; exit 0' SIGTERM
 
 # Set config
-electrum $FLAGS setconfig --offline rpcuser ${ELECTRUM_USER}
-electrum $FLAGS setconfig --offline rpcpassword ${ELECTRUM_PASSWORD}
-electrum $FLAGS setconfig --offline rpchost 0.0.0.0
-electrum $FLAGS setconfig --offline rpcport 7000
-
 if [ -z "$USE_GOSSIP" ]; then
   USE_GOSSIP=false
 fi
 
+if [ -z "$RPCPORT" ]; then
+  RPCPORT=7000
+fi
+
+electrum $FLAGS setconfig --offline rpcuser ${ELECTRUM_USER}
+electrum $FLAGS setconfig --offline rpcpassword ${ELECTRUM_PASSWORD}
+electrum $FLAGS setconfig --offline rpchost 0.0.0.0
+electrum $FLAGS setconfig --offline rpcport $RPCPORT
 electrum $FLAGS setconfig --offline use_gossip $USE_GOSSIP
 electrum $FLAGS setconfig --offline lightning_listen "$LIGHTNING_LISTEN"
 
