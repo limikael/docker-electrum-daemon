@@ -2,8 +2,8 @@ FROM python:3.9.5-alpine
 
 ARG BUILD_DATE
 ARG VCS_REF
-ARG VERSION=4.1.4
-ARG CHECKSUM_SHA512=1827ba199a3e20630b4d32a5e54cdb86e50c578b4649441c6067069b5c22d1d44fd3fd6d968d36e0cace60d5a5f5a4a9588e104b3378c003050a410a4ea0e01c
+ARG VERSION=4.1.5
+ARG CHECKSUM_SHA512=fbffd2366c8521e37da21dce0a59ca140f63635df5a2f31d5faafbc1267384bc6c76f66502a19cdcb4d4100f249c12bc336a54795a8b840bf299b5fda4bc1c8e
 LABEL maintainer="osintsev@gmail.com" \
 	org.label-schema.vendor="Distirbuted Solutions, Inc." \
 	org.label-schema.build-date=$BUILD_DATE \
